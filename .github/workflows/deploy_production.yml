@@ -1,4 +1,4 @@
-name: DeployProd
+name: DeployProduction
 
 on:
   pull_request:
@@ -11,37 +11,16 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
         python-version: [3.7]
+
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Cache Requirements
-      uses: actions/cache@v2
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
-    - name: Install Dependencies
-      run: |
-        python -m pip install --upgrade pip
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: AWS CDK GitHub Actions - Synth
-      uses: youyo/aws-cdk-github-actions@v1.1.10
-      with:
-        cdk_subcommand: 'synth'
-        cdk_stack: 'nlp-ecs-cluster-prod'
-        actions_comment: false
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_DEFAULT_REGION: 'us-west-2'
+
     - name: AWS CDK GitHub Actions - Diff
+      if: github.event_name == 'pull_request'
       id: diff
       uses: youyo/aws-cdk-github-actions@v1.1.10
       with:
@@ -49,10 +28,12 @@ jobs:
         cdk_stack: 'nlp-ecs-cluster-prod'
         actions_comment: true
       env:
+        GITHUB_TOKEN: ${{ secrets.CUSTOM_GIT_TOKEN }}
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_DEFAULT_REGION: 'us-west-2'
-    - name: AWS CDK - Deploy to Prod
+
+    - name: AWS CDK - Deploy to Production
       if: github.event_name == 'push'
       uses: youyo/aws-cdk-github-actions@v1.1.10
       with:
@@ -64,16 +45,16 @@ jobs:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_DEFAULT_REGION: 'us-west-2'
-    # https://github.com/marketplace/actions/action-slack
-    - name: Slack message
-      uses: 8398a7/action-slack@v2
-      with:
-        status: ${{ job.status }}
-        author_name: GitHubActions
+
+    - name: Slack Notification
+      if: github.event_name == 'push'
+      uses: rtCamp/action-slack-notify@master
       env:
-        GITHUB_TOKEN: ${{ secrets.CUSTOM_GIT_TOKEN }}
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_NLP_ALERTS }}
-      if: steps.diff.outputs.status_code == 1
+        SLACK_TITLE: 'Message:'
+        SLACK_MESSAGE: 'AWS ECS Cluster `Production` updated.'
+        SLACK_COLOR: '#3278BD'
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_NLP_ALERTS }}
+
     - name: Open Issue
       if: failure() && github.event_name == 'pull_request'
       run: |

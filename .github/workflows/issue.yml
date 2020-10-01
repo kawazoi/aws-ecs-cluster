@@ -8,12 +8,13 @@ jobs:
   slack-message:
     runs-on: ubuntu-latest
     steps:
-      - name: Slack message
-        run: |
-          curl -X POST -H 'Content-type: application/json' \
-          --data '{"text": "
-          > *${{ github.event.repository.name }}*:
-          > New issue created: <${{ github.event.issue.html_url }}|${{ github.event.issue.title }}.>
-          -----------------------------------
-          "}' \
-          ${{ secrets.SLACK_WEBHOOK_NLP_ALERTS }}
+
+    - name: Slack Notification
+      uses: rtCamp/action-slack-notify@master
+      env:
+        SLACK_CHANNEL: nlp-billing-test
+        SLACK_COLOR: '#3278BD'
+        SLACK_TITLE: New Issue
+        SLACK_MESSAGE: 'New issue created: <${{ github.event.issue.html_url }}|${{ github.event.issue.title }}.'
+        SLACK_USERNAME: ${{ github.event.repository.name }}-bot
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_NLP_ALERTS }}
