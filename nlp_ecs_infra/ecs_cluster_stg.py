@@ -24,6 +24,6 @@ class ECSClusterStg(core.Stack):
             vpc_subnets={"subnet_type": ec2.SubnetType.PUBLIC},
         )
 
-        cluster = ecs.Cluster(self, "NlpCltProd", vpc=vpc)
+        cluster = ecs.Cluster(self, "NlpClusterStg", vpc=vpc)
 
         cluster.add_auto_scaling_group(asg)
