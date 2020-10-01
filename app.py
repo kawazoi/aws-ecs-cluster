@@ -12,17 +12,17 @@ _env = core.Environment(
 )
 app = core.App()
 
-ENV = "Staging"
+stage = "Staging"
 config_stg = {}
-stg = EcsCluster(app, f"nlp-infra-{ENV.lower()}", ENV, config_stg, env=_env)
+stg = EcsCluster(app, f"nlp-infra-{stage.lower()}", stage, config_stg, env=_env)
 core.Tag.add(stg, "Project", "NlpServing")
-core.Tag.add(stg, "Environment", ENV)
+core.Tag.add(stg, "Environment", stage)
 
 
-ENV = "Production"
+stage = "Production"
 config_prod = {}
-prd = EcsCluster(app, f"nlp-infra-{ENV.lower()}", ENV, config_stg, env=_env)
+prd = EcsCluster(app, f"nlp-infra-{stage.lower()}", stage, config_prod, env=_env)
 core.Tag.add(prd, "Project", "NlpServing")
-core.Tag.add(prd, "Environment", ENV)
+core.Tag.add(prd, "Environment", stage)
 
 app.synth()

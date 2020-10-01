@@ -13,27 +13,27 @@ logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
 
 class EcsCluster(core.Stack):
     def __init__(
-        self, scope: core.Construct, id: str, environment: str, config: dict, **kwargs
+        self, scope: core.Construct, id: str, stage: str, config: dict, **kwargs
     ):
         super().__init__(scope, id, **kwargs)
-        MSG = "- Environment: {}\n- Config: {}".format(environment, config)
+        MSG = "- Environment: {}\n- Config: {}".format(stage, config)
         logging.info(MSG)
 
         self.vpc = aws_ec2.Vpc.from_lookup(
-            self, "VPC{}".format(environment), vpc_name=environment.lower()
+            self, "VPC{}".format(stage), vpc_name=stage.lower()
         )
 
         # Creating ECS Cluster in the VPC created above
         self.ecs_cluster = aws_ecs.Cluster(
             self,
-            "ECSCluster{}".format(environment),
+            "ECSCluster{}".format(stage),
             vpc=self.vpc,
-            cluster_name="ECSCluster{}".format(environment),
+            cluster_name="ECSCluster{}".format(stage),
         )
 
         # Adding service discovery namespace to cluster
         self.ecs_cluster.add_default_cloud_map_namespace(
-            name="service{}".format(environment),
+            name="service{}".format(stage),
         )
 
         ###### CAPACITY PROVIDERS SECTION #####
@@ -47,9 +47,9 @@ class EcsCluster(core.Stack):
 
         core.CfnOutput(
             self,
-            "EC2AutoScalingGroupName{}".format(environment),
+            "EC2AutoScalingGroupName{}".format(stage),
             value=self.asg.auto_scaling_group_name,
-            export_name="EC2ASGName{}".format(environment),
+            export_name="EC2ASGName{}".format(stage),
         )
 
         # Namespace details as CFN output
@@ -77,33 +77,33 @@ class EcsCluster(core.Stack):
         # All Outputs required for other stacks to build
         core.CfnOutput(
             self,
-            "NSArn{}".format(environment),
+            "NSArn{}".format(stage),
             value=self.namespace_outputs["ARN"],
-            export_name="NSARN{}".format(environment),
+            export_name="NSARN{}".format(stage),
         )
         core.CfnOutput(
             self,
-            "NSName{}".format(environment),
+            "NSName{}".format(stage),
             value=self.namespace_outputs["NAME"],
-            export_name="NSNAME{}".format(environment),
+            export_name="NSNAME{}".format(stage),
         )
         core.CfnOutput(
             self,
-            "NSId{}".format(environment),
+            "NSId{}".format(stage),
             value=self.namespace_outputs["ID"],
-            export_name="NSID{}".format(environment),
+            export_name="NSID{}".format(stage),
         )
         core.CfnOutput(
             self,
-            "ECSClusterName{}".format(environment),
+            "ECSClusterName{}".format(stage),
             value=self.cluster_outputs["NAME"],
-            export_name="ECSClusterName{}".format(environment),
+            export_name="ECSClusterName{}".format(stage),
         )
         core.CfnOutput(
             self,
-            "ECSClusterSecGrp{}".format(environment),
+            "ECSClusterSecGrp{}".format(stage),
             value=self.cluster_outputs["SECGRPS"],
-            export_name="ECSSecGrpList{}".format(environment),
+            export_name="ECSSecGrpList{}".format(stage),
         )
         # core.CfnOutput(self, "FE2BESecGrp", value=self.services_3000_sec_group.security_group_id, export_name="SecGrpId")
         # core.CfnOutput(self, "ServicesSecGrp", value=self.services_3000_sec_group.security_group_id, export_name="ServicesSecGrp")
