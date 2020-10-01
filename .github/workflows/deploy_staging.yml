@@ -53,7 +53,7 @@ jobs:
         SLACK_CHANNEL: nlp-billing-test
         SLACK_COLOR: '#3278BD'
         SLACK_TITLE: Cluster updated
-        SLACK_MESSAGE: 'Post Content :rocket:'
+        SLACK_MESSAGE: 'AWS ECS Cluster Staging updated.'
         SLACK_USERNAME: ${{ github.event.repository.name }}-bot
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_NLP_ALERTS }}
 
