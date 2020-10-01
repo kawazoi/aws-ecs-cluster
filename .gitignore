@@ -12,3 +12,6 @@ cdk.out
 .DS_Store
 
 venv/
+.vscode/
+
+cdk.context.json

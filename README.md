@@ -14,7 +14,6 @@ Attention: Remember to clear all resources to avoid unnecessary costs.
 - AWS CDK
 - Github Actions
 
-
 ## CI / CD Flow
 
 1. Create and push `new_branch`: `Lint` and `CDK Diff Staging and Production`
@@ -46,14 +45,14 @@ you can create the virtualenv manually.
 To manually create a virtualenv on MacOS and Linux:
 
 ```bash
-python3 -m venv .env
+python3 -m venv venv
 ```
 
 After the init process completes and the virtualenv is created, you can use the following
 step to activate your virtualenv.
 
 ```bash
-source .env/bin/activate
+source venv/bin/activate
 ```
 
 Once the virtualenv is activated, you can install the required dependencies.
