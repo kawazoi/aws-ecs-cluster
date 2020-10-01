@@ -6,12 +6,18 @@ This repository is the first one in our [series](../README.md).
 
 Attention: Remember to clear all resources to avoid unnecessary costs.
 
+
 ## Requirements
 
 - Python 3,7
 - virtualenv
 - AWS CDK
 - Github Actions
+
+
+## Deploy Stack locally
+
+1. Follow the steps below
 
 # Welcome to your CDK Python project!
 
