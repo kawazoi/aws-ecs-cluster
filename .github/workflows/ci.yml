@@ -47,6 +47,7 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_DEFAULT_REGION: 'us-west-2'
     - name: AWS CDK - Deploy to Staging
+      if: github.event_name == 'push' && github.ref == 'refs/heads/staging'
       uses: youyo/aws-cdk-github-actions@v1.1.10
       with:
         cdk_subcommand: 'deploy'
