@@ -8,7 +8,9 @@ from nlp_infra.nlp_infra_prod import NlpInfraProduction
 
 
 load_dotenv()
-_env = core.Environment(account=getenv('AWS_ACCOUNT_ID'), region=getenv('AWS_DEFAULT_REGION'))
+_env = core.Environment(
+    account=getenv("AWS_ACCOUNT_ID"), region=getenv("AWS_DEFAULT_REGION")
+)
 app = core.App()
 
 stg = NlpInfraStaging(app, "nlp-infra-staging", env=_env)

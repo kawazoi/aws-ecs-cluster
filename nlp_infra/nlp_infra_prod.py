@@ -13,12 +13,7 @@ class NlpInfraProduction(core.Stack):
     def __init__(self, scope: core.Stack, id: str, **kwargs):
         super().__init__(scope, id, **kwargs)
 
-        self.vpc = aws_ec2.Vpc(
-            self,
-            "Vpc{}".format(ENV),
-            cidr="10.0.0.0/24",
-            max_azs=1
-        )
+        self.vpc = aws_ec2.Vpc(self, "Vpc{}".format(ENV), cidr="10.0.0.0/24", max_azs=1)
 
         # Creating ECS Cluster in the VPC created above
         self.ecs_cluster = aws_ecs.Cluster(
@@ -81,11 +76,36 @@ class NlpInfraProduction(core.Stack):
             )
 
         # All Outputs required for other stacks to build
-        core.CfnOutput(self, "NSArn{}".format(ENV), value=self.namespace_outputs['ARN'], export_name="NSARN{}".format(ENV))
-        core.CfnOutput(self, "NSName{}".format(ENV), value=self.namespace_outputs['NAME'], export_name="NSNAME{}".format(ENV))
-        core.CfnOutput(self, "NSId{}".format(ENV), value=self.namespace_outputs['ID'], export_name="NSID{}".format(ENV))
-        core.CfnOutput(self, "ECSClusterName{}".format(ENV), value=self.cluster_outputs['NAME'], export_name="ECSClusterName{}".format(ENV))
-        core.CfnOutput(self, "ECSClusterSecGrp{}".format(ENV), value=self.cluster_outputs['SECGRPS'], export_name="ECSSecGrpList{}".format(ENV))
+        core.CfnOutput(
+            self,
+            "NSArn{}".format(ENV),
+            value=self.namespace_outputs["ARN"],
+            export_name="NSARN{}".format(ENV),
+        )
+        core.CfnOutput(
+            self,
+            "NSName{}".format(ENV),
+            value=self.namespace_outputs["NAME"],
+            export_name="NSNAME{}".format(ENV),
+        )
+        core.CfnOutput(
+            self,
+            "NSId{}".format(ENV),
+            value=self.namespace_outputs["ID"],
+            export_name="NSID{}".format(ENV),
+        )
+        core.CfnOutput(
+            self,
+            "ECSClusterName{}".format(ENV),
+            value=self.cluster_outputs["NAME"],
+            export_name="ECSClusterName{}".format(ENV),
+        )
+        core.CfnOutput(
+            self,
+            "ECSClusterSecGrp{}".format(ENV),
+            value=self.cluster_outputs["SECGRPS"],
+            export_name="ECSSecGrpList{}".format(ENV),
+        )
         # core.CfnOutput(self, "FE2BESecGrp", value=self.services_3000_sec_group.security_group_id, export_name="SecGrpId")
         # core.CfnOutput(self, "ServicesSecGrp", value=self.services_3000_sec_group.security_group_id, export_name="ServicesSecGrp")
         # core.CfnOutput(self, "StressToolEc2Id",value=self.instance.instance_id)
