@@ -50,11 +50,9 @@ jobs:
       if: github.event_name == 'push'
       uses: rtCamp/action-slack-notify@master
       env:
-        SLACK_CHANNEL: nlp-billing-test
+        SLACK_TITLE: 'Message:'
+        SLACK_MESSAGE: 'AWS ECS Cluster `Production` updated.'
         SLACK_COLOR: '#3278BD'
-        SLACK_TITLE: Cluster updated
-        SLACK_MESSAGE: 'Post Content :rocket:'
-        SLACK_USERNAME: ${{ github.event.repository.name }}-bot
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_NLP_ALERTS }}
 
     - name: Open Issue
