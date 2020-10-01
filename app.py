@@ -1,17 +1,17 @@
 from aws_cdk import core
 
-from nlp_ecs_infra.ecs_cluster_stg import ECSClusterStg
-from nlp_ecs_infra.ecs_cluster_prod import ECSClusterProd
+from nlp_infra.nlp_infra_stg import NlpInfraStaging
+from nlp_infra.nlp_infra_prod import NlpInfraProduction
 
 
 app = core.App()
 
-ecs_cluster_stg_stack = ECSClusterStg(app, "nlp-ecs-cluster-stg")
-core.Tag.add(ecs_cluster_stg_stack, "Project", "NlpServing")
-core.Tag.add(ecs_cluster_stg_stack, "Environment", "Staging")
+stg = NlpInfraStaging(app, "nlp-infra-staging")
+core.Tag.add(stg, "Project", "NlpServing")
+core.Tag.add(stg, "Environment", "Staging")
 
-ecs_cluster_prod_stack = ECSClusterProd(app, "nlp-ecs-cluster-prod")
-core.Tag.add(ecs_cluster_prod_stack, "Project", "NlpServing")
-core.Tag.add(ecs_cluster_prod_stack, "Environment", "Production")
+prd = NlpInfraProduction(app, "nlp-infra-production")
+core.Tag.add(prd, "Project", "NlpServing")
+core.Tag.add(prd, "Environment", "Production")
 
 app.synth()
