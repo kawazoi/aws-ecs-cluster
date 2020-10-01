@@ -19,7 +19,7 @@ class ECSClusterStg(core.Stack):
             machine_image=ecs.EcsOptimizedAmi(),
             associate_public_ip_address=True,
             update_type=autoscaling.UpdateType.REPLACING_UPDATE,
-            desired_capacity=1,
+            desired_capacity=2,
             vpc=vpc,
             vpc_subnets={"subnet_type": ec2.SubnetType.PUBLIC},
         )
