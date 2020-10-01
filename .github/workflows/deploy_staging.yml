@@ -50,7 +50,7 @@ jobs:
       if: github.event_name == 'push'
       uses: rtCamp/action-slack-notify@master
       env:
-        SLACK_CHANNEL: nlp-alerts
+        SLACK_CHANNEL: nlp-billing-test
         SLACK_COLOR: '#3278BD'
         SLACK_TITLE: Cluster updated
         SLACK_MESSAGE: 'Post Content :rocket:'
