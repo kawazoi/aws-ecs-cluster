@@ -1,4 +1,4 @@
-![](https://github.com/kawazoi/aws-ecs-cluster/workflows/CI/badge.svg?branch=staging&event=push)
+![](https://github.com/kawazoi/aws-ecs-cluster/workflows/CI/badge.svg?branch=master&event=push) ![](https://github.com/kawazoi/aws-ecs-cluster/workflows/CI/badge.svg?branch=staging&event=push)
 
 # ECS Cluster
 

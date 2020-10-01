@@ -1,10 +1,12 @@
-name: CI
+name: DeployProd
 
 on:
   pull_request:
-    branch: [staging, master]
+    branches:
+      - master
   push:
-    branch: [staging, master]
+    branches:
+      - master
 
 jobs:
   ci:
@@ -33,33 +35,25 @@ jobs:
       uses: youyo/aws-cdk-github-actions@v1.1.10
       with:
         cdk_subcommand: 'synth'
-        cdk_version: '1.16.2'
+        cdk_stack: 'nlp-ecs-cluster-prod'
+        actions_comment: false
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_DEFAULT_REGION: 'us-west-2'
     - name: AWS CDK GitHub Actions - Diff
+      id: diff
       uses: youyo/aws-cdk-github-actions@v1.1.10
       with:
         cdk_subcommand: 'diff'
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_DEFAULT_REGION: 'us-west-2'
-    - name: AWS CDK - Deploy to Staging
-      if: github.event_name == 'push' && github.ref == 'refs/heads/staging'
-      uses: youyo/aws-cdk-github-actions@v1.1.10
-      with:
-        cdk_subcommand: 'deploy'
-        cdk_stack: 'nlp-ecs-cluster-stg'
+        cdk_stack: 'nlp-ecs-cluster-prod'
         actions_comment: false
-        args: '--require-approval never'
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_DEFAULT_REGION: 'us-west-2'
-    - name: AWS CDK - Deploy to Production
-      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    - name: AWS CDK - Deploy to Prod
+      if: github.event_name == 'push'
       uses: youyo/aws-cdk-github-actions@v1.1.10
       with:
         cdk_subcommand: 'deploy'
@@ -70,11 +64,16 @@ jobs:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_DEFAULT_REGION: 'us-west-2'
-    - name: Run Semantic Release
-      if: github.event_name == 'push' && (github.ref == 'refs/heads/staging' || github.ref == 'refs/heads/master')
-      run: npx semantic-release
+    # https://github.com/marketplace/actions/action-slack
+    - name: Slack message
+      uses: 8398a7/action-slack@v2
+      with:
+        status: ${{ job.status }}
+        author_name: GitHubActions
       env:
         GITHUB_TOKEN: ${{ secrets.CUSTOM_GIT_TOKEN }}
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_NLP_ALERTS }}
+      if: steps.diff.outputs.status_code == 1
     - name: Open Issue
       if: failure() && github.event_name == 'pull_request'
       run: |
