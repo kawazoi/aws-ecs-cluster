@@ -1,3 +1,5 @@
+![](https://github.com/kawazoi/aws-ecs-cluster/workflows/CI/badge.svg?branch=staging&event=push)
+
 # ECS Cluster
 
 This repository is the first one in our [series](../README.md).
