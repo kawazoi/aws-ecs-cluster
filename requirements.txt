@@ -5,3 +5,5 @@ aws-cdk.aws_ecs
 
 # Work around for jsii#413
 aws-cdk.aws-autoscaling-common
+
+python-dotenv
