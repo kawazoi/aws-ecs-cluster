@@ -7,17 +7,12 @@ on:
     branch: [staging, master]
 
 jobs:
-  diff-stacks:
+  diffStacks:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        python-version: [3.7]
-
     steps:
     - uses: actions/checkout@v2
 
-    - name: Diff Staging
+    - name: Run CDK Diff Staging
       uses: youyo/aws-cdk-github-actions@v1.1.10
       with:
         cdk_subcommand: 'diff'
@@ -29,7 +24,7 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
 
-    - name: Diff Production
+    - name: Run CDK Diff Production
       uses: youyo/aws-cdk-github-actions@v1.1.10
       with:
         cdk_subcommand: 'diff'

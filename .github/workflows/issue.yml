@@ -5,10 +5,9 @@ on:
     types: [opened]
 
 jobs:
-  slack-message:
+  sendSlackMessage:
     runs-on: ubuntu-latest
     steps:
-
     - name: Slack Notification
       uses: rtCamp/action-slack-notify@master
       env:
