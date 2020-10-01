@@ -14,6 +14,46 @@ Attention: Remember to clear all resources to avoid unnecessary costs.
 - AWS CDK
 - Github Actions
 
+
+## Initial deploy
+
+1. Create virtualenv `venv`
+2. Create and edit `.env` file
+3. Deploy stack staging
+    - Deploy using cdk
+    - "Manually" enable [EC2 capacity](https://ecsworkshop.com/capacity_providers/ec2/) on the cluster
+4. Deploy stack production
+    - Deploy using cdk
+    - "Manually" enable [EC2 capacity](https://ecsworkshop.com/capacity_providers/ec2/) on the cluster
+
+- How to Enable Capacity Provider
+
+    - Create a capacity provider:
+
+        ```bash
+        export ENV=Staging
+        export AWS_REGION=us-west-2
+        # Get the required cluster values needed when creating the capacity provider
+        export asg_name=$(aws cloudformation describe-stacks --stack-name nlp-infra-${ENV} | jq -r '.Stacks[].Outputs[] | select(.ExportName != null) | select(.ExportName | contains("EC2ASGName"))| .OutputValue')
+        export asg_arn=$(aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names $asg_name | jq .AutoScalingGroups[].AutoScalingGroupARN)
+        export capacity_provider_name=$(echo "EC2$(date +'%s')")
+        # Creating capacity provider
+        aws ecs create-capacity-provider \
+            --name $capacity_provider_name \
+            --auto-scaling-group-provider autoScalingGroupArn="$asg_arn",managedScaling=\{status="ENABLED",targetCapacity=80\},managedTerminationProtection="DISABLED" \
+            --region $AWS_REGION
+        ```
+
+    - Associate it with the ECS Cluster:
+
+        ```bash
+        aws ecs put-cluster-capacity-providers \
+            --cluster container-demo \
+            --capacity-providers $capacity_provider_name \
+            --default-capacity-provider-strategy capacityProvider=$capacity_provider_name,weight=1,base=1
+        ```
+
+
 ## CI / CD Flow
 
 1. Create and push `new_branch`: `Lint` and `CDK Diff Staging and Production`
