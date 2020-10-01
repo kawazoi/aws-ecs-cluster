@@ -6,17 +6,12 @@ on:
       - staging
 
 jobs:
-  ci:
+  deployStaging:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        python-version: [3.7]
-
     steps:
     - uses: actions/checkout@v2
 
-    - name: AWS CDK GitHub Actions - Diff
+    - name: Run CDK Diff Staging
       id: diff
       uses: youyo/aws-cdk-github-actions@v1.1.10
       with:
@@ -29,7 +24,7 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
 
-    - name: AWS CDK - Deploy to Staging
+    - name: Run CDK Deploy Staging
       uses: youyo/aws-cdk-github-actions@v1.1.10
       with:
         cdk_subcommand: 'deploy'
@@ -41,7 +36,7 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_DEFAULT_REGION: 'us-west-2'
 
-    - name: Slack Notification
+    - name: Send Slack Notification
       uses: rtCamp/action-slack-notify@master
       env:
         SLACK_TITLE: 'Message:'

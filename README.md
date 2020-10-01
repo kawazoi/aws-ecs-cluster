@@ -15,6 +15,17 @@ Attention: Remember to clear all resources to avoid unnecessary costs.
 - Github Actions
 
 
+## CI / CD Flow
+
+1. Create and push `new_branch`: `Lint` and `CDK Diff Staging and Production`
+
+2. Pull request to `staging` and `master`: `Lint` and `CDK Diff Staging and Production`
+
+3. Push to `staging`: `DeployStaging`
+
+4. Push to `master`: `DeployProduction`
+
+
 ## Deploy Stack locally
 
 1. Follow the steps below
