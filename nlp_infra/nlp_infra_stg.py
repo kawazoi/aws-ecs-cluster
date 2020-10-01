@@ -13,7 +13,7 @@ class NlpInfraStaging(core.Stack):
     def __init__(self, scope: core.Construct, id: str, **kwargs):
         super().__init__(scope, id, **kwargs)
 
-        self.vpc = aws_ec2.Vpc(self, "Vpc{}".format(ENV), cidr="10.0.0.0/24", max_azs=1)
+        self.vpc = aws_ec2.Vpc.from_lookup(self, "VPC{}".format(ENV), vpc_name=ENV.lower())
 
         # Creating ECS Cluster in the VPC created above
         self.ecs_cluster = aws_ecs.Cluster(
