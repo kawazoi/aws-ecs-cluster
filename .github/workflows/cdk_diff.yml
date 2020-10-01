@@ -1,12 +1,13 @@
-name: Diff Production
+name: CDK Diff Staging and Production
 
 on:
+  push:
+    branch: [staging, master]
   pull_request:
-    branches:
-      - master
+    branch: [staging, master]
 
 jobs:
-  ci:
+  diff-stacks:
     runs-on: ubuntu-latest
 
     strategy:
@@ -16,8 +17,19 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: AWS CDK GitHub Actions - Diff
-      id: diff
+    - name: Diff Staging
+      uses: youyo/aws-cdk-github-actions@v1.1.10
+      with:
+        cdk_subcommand: 'diff'
+        cdk_stack: 'nlp-ecs-cluster-stg'
+        actions_comment: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.CUSTOM_GIT_TOKEN }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+
+    - name: Diff Production
       uses: youyo/aws-cdk-github-actions@v1.1.10
       with:
         cdk_subcommand: 'diff'
