@@ -3,8 +3,7 @@ from os import getenv
 
 from aws_cdk import core
 
-from nlp_infra.nlp_infra_stg import NlpInfraStaging
-from nlp_infra.nlp_infra_prod import NlpInfraProduction
+from nlp_infra.ecs_cluster import EcsCluster
 
 
 load_dotenv()
@@ -13,12 +12,17 @@ _env = core.Environment(
 )
 app = core.App()
 
-stg = NlpInfraStaging(app, "nlp-infra-staging", env=_env)
+ENV = "Staging"
+config_stg = {}
+stg = EcsCluster(app, f"nlp-infra-{ENV.lower()}", ENV, config_stg, env=_env)
 core.Tag.add(stg, "Project", "NlpServing")
-core.Tag.add(stg, "Environment", "Staging")
+core.Tag.add(stg, "Environment", ENV)
 
-prd = NlpInfraProduction(app, "nlp-infra-production", env=_env)
+
+ENV = "Production"
+config_prod = {}
+prd = EcsCluster(app, f"nlp-infra-{ENV.lower()}", ENV, config_stg, env=_env)
 core.Tag.add(prd, "Project", "NlpServing")
-core.Tag.add(prd, "Environment", "Production")
+core.Tag.add(prd, "Environment", ENV)
 
 app.synth()

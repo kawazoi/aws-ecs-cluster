@@ -1,3 +1,5 @@
+import logging
+
 from aws_cdk import (
     aws_ec2,
     aws_ecs,
@@ -5,27 +7,33 @@ from aws_cdk import (
     aws_iam,
 )
 
+LOG_FORMAT = "%(asctime)s - %(levelname)s - %(name)s - %(message)s"
+logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
 
-ENV = "Staging"
 
-
-class NlpInfraStaging(core.Stack):
-    def __init__(self, scope: core.Construct, id: str, **kwargs):
+class EcsCluster(core.Stack):
+    def __init__(
+        self, scope: core.Construct, id: str, environment: str, config: dict, **kwargs
+    ):
         super().__init__(scope, id, **kwargs)
+        MSG = "- Environment: {}\n- Config: {}".format(environment, config)
+        logging.info(MSG)
 
-        self.vpc = aws_ec2.Vpc.from_lookup(self, "VPC{}".format(ENV), vpc_name=ENV.lower())
+        self.vpc = aws_ec2.Vpc.from_lookup(
+            self, "VPC{}".format(environment), vpc_name=environment.lower()
+        )
 
         # Creating ECS Cluster in the VPC created above
         self.ecs_cluster = aws_ecs.Cluster(
             self,
-            "ECSCluster{}".format(ENV),
+            "ECSCluster{}".format(environment),
             vpc=self.vpc,
-            cluster_name="ECSCluster{}".format(ENV),
+            cluster_name="ECSCluster{}".format(environment),
         )
 
         # Adding service discovery namespace to cluster
         self.ecs_cluster.add_default_cloud_map_namespace(
-            name="service{}".format(ENV),
+            name="service{}".format(environment),
         )
 
         ###### CAPACITY PROVIDERS SECTION #####
@@ -39,24 +47,10 @@ class NlpInfraStaging(core.Stack):
 
         core.CfnOutput(
             self,
-            "EC2AutoScalingGroupName{}".format(ENV),
+            "EC2AutoScalingGroupName{}".format(environment),
             value=self.asg.auto_scaling_group_name,
-            export_name="EC2ASGName{}".format(ENV),
+            export_name="EC2ASGName{}".format(environment),
         )
-        ##### END CAPACITY PROVIDER SECTION #####
-
-        # asg = autoscaling.AutoScalingGroup(
-        #     self,
-        #     "NlpFleetStg",
-        #     instance_type=ec2.InstanceType("t3.micro"),
-        #     machine_image=ecs.EcsOptimizedAmi(),
-        #     associate_public_ip_address=True,
-        #     update_type=autoscaling.UpdateType.REPLACING_UPDATE,
-        #     desired_capacity=1,
-        #     vpc=vpc,
-        #     vpc_subnets={"subnet_type": ec2.SubnetType.PUBLIC},
-        # )
-        # cluster.add_auto_scaling_group(asg)
 
         # Namespace details as CFN output
         self.namespace_outputs = {
@@ -83,33 +77,33 @@ class NlpInfraStaging(core.Stack):
         # All Outputs required for other stacks to build
         core.CfnOutput(
             self,
-            "NSArn{}".format(ENV),
+            "NSArn{}".format(environment),
             value=self.namespace_outputs["ARN"],
-            export_name="NSARN{}".format(ENV),
+            export_name="NSARN{}".format(environment),
         )
         core.CfnOutput(
             self,
-            "NSName{}".format(ENV),
+            "NSName{}".format(environment),
             value=self.namespace_outputs["NAME"],
-            export_name="NSNAME{}".format(ENV),
+            export_name="NSNAME{}".format(environment),
         )
         core.CfnOutput(
             self,
-            "NSId{}".format(ENV),
+            "NSId{}".format(environment),
             value=self.namespace_outputs["ID"],
-            export_name="NSID{}".format(ENV),
+            export_name="NSID{}".format(environment),
         )
         core.CfnOutput(
             self,
-            "ECSClusterName{}".format(ENV),
+            "ECSClusterName{}".format(environment),
             value=self.cluster_outputs["NAME"],
-            export_name="ECSClusterName{}".format(ENV),
+            export_name="ECSClusterName{}".format(environment),
         )
         core.CfnOutput(
             self,
-            "ECSClusterSecGrp{}".format(ENV),
+            "ECSClusterSecGrp{}".format(environment),
             value=self.cluster_outputs["SECGRPS"],
-            export_name="ECSSecGrpList{}".format(ENV),
+            export_name="ECSSecGrpList{}".format(environment),
         )
         # core.CfnOutput(self, "FE2BESecGrp", value=self.services_3000_sec_group.security_group_id, export_name="SecGrpId")
         # core.CfnOutput(self, "ServicesSecGrp", value=self.services_3000_sec_group.security_group_id, export_name="ServicesSecGrp")
