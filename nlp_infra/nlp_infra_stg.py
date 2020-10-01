@@ -17,6 +17,7 @@ class NlpInfraStaging(core.Stack):
             self,
             "Vpc{}".format(ENV),
             cidr="10.0.0.0/24",
+            max_azs=1
         )
 
         # Creating ECS Cluster in the VPC created above
