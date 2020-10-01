@@ -1,6 +1,5 @@
 from aws_cdk import core
 
-from nlp_ecs_infra.ecs_cluster_dev import ECSClusterDev
 from nlp_ecs_infra.ecs_cluster_stg import ECSClusterStg
 from nlp_ecs_infra.ecs_cluster_prod import ECSClusterProd
 
