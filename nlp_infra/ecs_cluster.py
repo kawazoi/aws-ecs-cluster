@@ -41,7 +41,7 @@ class EcsCluster(core.Stack):
         self.asg = self.ecs_cluster.add_capacity(
             "ECSEC2Capacity",
             instance_type=aws_ec2.InstanceType(instance_type_identifier="t3.small"),
-            min_capacity=0,
+            min_capacity=1,
             max_capacity=10,
         )
 
