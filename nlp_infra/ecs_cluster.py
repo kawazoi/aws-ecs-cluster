@@ -23,6 +23,20 @@ class EcsCluster(core.Stack):
             self, "VPC{}".format(stage), vpc_name=stage.lower()
         )
 
+        self.public_subnet_1 = aws_ec2.PublicSubnet(
+            self, "public-1".format(stage.lower()),
+            vpc_id=self.vpc.vpc_id,
+            availability_zone='us-east-1e',
+            cidr_block = "10.0.3.0/24",
+        )
+
+        self.public_subnet_2 = aws_ec2.PublicSubnet(
+            self, "public-2".format(stage.lower()),
+            vpc_id=self.vpc.vpc_id,
+            availability_zone='us-east-1f',
+            cidr_block = "10.0.4.0/24",
+        )
+
         # Creating ECS Cluster in the VPC created above
         self.ecs_cluster = aws_ecs.Cluster(
             self,
