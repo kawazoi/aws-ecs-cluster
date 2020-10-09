@@ -4,7 +4,6 @@ from aws_cdk import (
     aws_ec2,
     aws_ecs,
     core,
-    aws_iam,
 )
 
 LOG_FORMAT = "%(asctime)s - %(levelname)s - %(name)s - %(message)s"
@@ -21,20 +20,6 @@ class EcsCluster(core.Stack):
 
         self.vpc = aws_ec2.Vpc.from_lookup(
             self, "VPC{}".format(stage), vpc_name=stage.lower()
-        )
-
-        self.public_subnet_1 = aws_ec2.PublicSubnet(
-            self, "public-1".format(stage.lower()),
-            vpc_id=self.vpc.vpc_id,
-            availability_zone='us-east-1e',
-            cidr_block = "10.0.3.0/24",
-        )
-
-        self.public_subnet_2 = aws_ec2.PublicSubnet(
-            self, "public-2".format(stage.lower()),
-            vpc_id=self.vpc.vpc_id,
-            availability_zone='us-east-1f',
-            cidr_block = "10.0.4.0/24",
         )
 
         # Creating ECS Cluster in the VPC created above
@@ -119,7 +104,3 @@ class EcsCluster(core.Stack):
             value=self.cluster_outputs["SECGRPS"],
             export_name="ECSSecGrpList{}".format(stage),
         )
-        # core.CfnOutput(self, "FE2BESecGrp", value=self.services_3000_sec_group.security_group_id, export_name="SecGrpId")
-        # core.CfnOutput(self, "ServicesSecGrp", value=self.services_3000_sec_group.security_group_id, export_name="ServicesSecGrp")
-        # core.CfnOutput(self, "StressToolEc2Id",value=self.instance.instance_id)
-        # core.CfnOutput(self, "StressToolEc2Ip",value=self.instance.instance_private_ip)
